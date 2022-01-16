@@ -1,6 +1,16 @@
 import pandas as pd
 
-def group(series,dict_with_labels={}):
+
+def get_data(path, encoder=None, cols=None, drop_invariant=True) -> pd.DataFrame:
+    data = pd.read_csv(path)
+
+    if encoder is not None:
+        data = encoder.transform(data, cols=cols, drop_invariant=drop_invariant, return_df=True)
+
+    return data
+
+
+def group(series, dict_with_labels={}):
     l = []
     counter = 0
     for el in series:
@@ -8,7 +18,7 @@ def group(series,dict_with_labels={}):
             dict_with_labels[el] = counter
             counter += 1
         l.append(dict_with_labels[el])
-    return pd.Series(l,name=series.name), dict_with_labels
+    return pd.Series(l, name=series.name), dict_with_labels
 
 
 if __name__ == '__main__':
@@ -42,8 +52,8 @@ if __name__ == '__main__':
     # Saving new dataframe
     # df.to_csv('../data/train_num.csv', index=False)
 
-    #-----------------------------------------------------------------------------------------------------------
-    print("-"*80+"\nTest set:")
+    # -----------------------------------------------------------------------------------------------------------
+    print("-" * 80 + "\nTest set:")
 
     # Test set and the same as previous transformation
 
@@ -57,14 +67,13 @@ if __name__ == '__main__':
 
     print(df.head().to_string())
 
-    df['Name'], _ = group(df['Name'],d1)
-    df['Sex'], _ = group(df['Sex'],d2)
-    df['Ticket'], _ = group(df['Ticket'],d3)
-    df['Cabin'], _ = group(df['Cabin'],d4)
-    df['Embarked'], _ = group(df['Embarked'],d5)
+    df['Name'], _ = group(df['Name'], d1)
+    df['Sex'], _ = group(df['Sex'], d2)
+    df['Ticket'], _ = group(df['Ticket'], d3)
+    df['Cabin'], _ = group(df['Cabin'], d4)
+    df['Embarked'], _ = group(df['Embarked'], d5)
 
     print(df.head().to_string())
 
     # Saving new dataframe
     # df.to_csv('../data/test_num.csv', index=False)
-

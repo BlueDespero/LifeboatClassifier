@@ -1,18 +1,32 @@
 import numpy as np
 import scipy.stats as sstats
+from Classification_algorithms.common import AbstractClassifier
 
 
-def create_proximity_matrix(train, test, k=5):
-    proximity_matrix = np.array(np.einsum('ij, ij ->i', train, train)[:, None]) + \
-                       np.array(np.einsum('ij, ij ->i', test, test)) - np.array(2 * train.dot(test.T))
-    return np.argsort(proximity_matrix, axis=0)[:k, :]
+class KNN(AbstractClassifier):
 
+    def __init__(self):
+        super().__init__()
+        self.k = None
 
-def KNN(train_X, train_Y, test_X, k=5):
-    distance_matrix = create_proximity_matrix(train_X, test_X, k=k)
-    targets = np.array(train_Y)[distance_matrix]
+    def __str__(self):
+        return "K-Nearest Neighbors"
 
-    predictions = sstats.mode(targets).mode
-    predictions = predictions.ravel()
+    def train(self, train_x, train_y, k=5, **kwargs):
+        super().train(train_x, train_y)
+        self.k = k
 
-    return predictions
+    def create_proximity_matrix(self, train, test):
+        proximity_matrix = np.array(np.einsum('ij, ij ->i', train, train)[:, None]) + \
+                           np.array(np.einsum('ij, ij ->i', test, test)) - np.array(2 * train.dot(test.T))
+        return np.argsort(proximity_matrix, axis=0)[:self.k, :]
+
+    def classify(self, x, **kwargs):
+        distance_matrix = self.create_proximity_matrix(self.train_x, x)
+        targets = np.array(self.train_y)[distance_matrix]
+
+        predictions = sstats.mode(targets).mode
+        predictions = predictions.ravel()
+
+        return predictions
+
