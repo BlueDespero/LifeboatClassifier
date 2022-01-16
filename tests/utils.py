@@ -20,6 +20,7 @@ def cross_validation(x: pd.DataFrame, y: pd.DataFrame, classifier: AbstractClass
         err_rate_list.append(err_rate)
 
     kwargs['err_rate'] = np.mean(err_rate_list).round(3)
+    kwargs['standard_deviation'] = np.std(np.array(err_rate_list))
     kwargs['classifier'] = str(classifier)
 
     return kwargs
