@@ -1,15 +1,16 @@
-import pandas as pd
+from category_encoders import BinaryEncoder
 
 from Classification_algorithms.K_Nearest_Neighbors.k_nearest_neighbors import KNN
+from utils.data_preprocessing import get_data
 
-train = pd.read_csv("../../data/train_num.csv")
-test = pd.read_csv("../../data/test_num.csv")
+train_x, train_y, test, _ = get_data(["../../data/train.csv", "../../data/test.csv"], encoder=BinaryEncoder)
+# train_x, train_y, test, _ = get_data(["../../data/train_num.csv", "../../data/test_num.csv"])
 
-train_x = train.iloc[:, 2:]
-train_y = train.iloc[:, 1]
+knn = KNN()
+knn.train(train_x, train_y, k=10)
+results = knn.classify(test)
 
-results = KNN(train_x, train_y, test.iloc[:, 1:], k=10)
+test['Survived'] = results
 
-test.insert(1, column='Survived', value=results)
-
-test.iloc[:, :2].to_csv('../../Predictions/k_nearest_neighbors.csv', index=False)
+test[['PassengerId', 'Survived']].to_csv('../../Classification_algorithms/Predictions/k_nearest_neighbors.csv',
+                                         index=False)

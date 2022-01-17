@@ -1,17 +1,34 @@
+import itertools
+
+import numpy as np
 import pandas as pd
 
 
 def get_data(path, encoder=None, cols=None, drop_invariant=True) -> (pd.DataFrame, pd.DataFrame):
-    data = pd.read_csv(path)
-    xs = data[data.columns.difference(['Survived'])]
-    ys = data['Survived'] if 'Survived' in data.columns else None
+    if not isinstance(path, list):
+        path = [path]
+
+    x_list = []
+    y_list = []
+
+    for p in path:
+        data = pd.read_csv(p)
+        xs = data[data.columns.difference(['Survived'])]
+        ys = data['Survived'] if 'Survived' in data.columns else None
+
+        x_list.append(xs)
+        y_list.append(ys)
 
     if encoder is not None:
-        enc = encoder(cols=cols, drop_invariant=drop_invariant, return_df=True)
-        enc.fit(xs, ys)
-        xs = enc.transform(xs)
+        x_merged = pd.concat(x_list)
+        splits = np.cumsum([0] + [x.shape[0] for x in x_list])
 
-    return xs, ys
+        enc = encoder(cols=cols, drop_invariant=drop_invariant, return_df=True)
+        enc.fit(x_merged)
+        x_merged_transformed = enc.transform(x_merged)
+        x_list = [x_merged_transformed.iloc[splits[i]:splits[i + 1]] for i in range(len(splits)-1)]
+
+    return list(itertools.chain(*[[x, y] for x, y in zip(x_list, y_list)]))
 
 
 def group(series, dict_with_labels={}):
