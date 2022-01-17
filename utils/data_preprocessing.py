@@ -1,13 +1,17 @@
 import pandas as pd
 
 
-def get_data(path, encoder=None, cols=None, drop_invariant=True) -> pd.DataFrame:
+def get_data(path, encoder=None, cols=None, drop_invariant=True) -> (pd.DataFrame, pd.DataFrame):
     data = pd.read_csv(path)
+    xs = data[data.columns.difference(['Survived'])]
+    ys = data['Survived'] if 'Survived' in data.columns else None
 
     if encoder is not None:
-        data = encoder.transform(data, cols=cols, drop_invariant=drop_invariant, return_df=True)
+        enc = encoder(cols=cols, drop_invariant=drop_invariant, return_df=True)
+        enc.fit(xs, ys)
+        xs = enc.transform(xs)
 
-    return data
+    return xs, ys
 
 
 def group(series, dict_with_labels={}):
