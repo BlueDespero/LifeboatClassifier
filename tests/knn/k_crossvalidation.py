@@ -37,21 +37,22 @@ encoders = {
 distances = ["braycurtis", "canberra", "chebyshev", "cityblock", "correlation", "cosine", "euclidean", "jensenshannon",
              "matching", "minkowski", "russellrao", "seuclidean", "sqeuclidean"]
 
-with warnings.catch_warnings():
-    warnings.simplefilter("ignore")
+if __name__ == "__main__":
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
 
-    for encoder, distance in tqdm.tqdm(list(itertools.product(encoders.items(), distances))):
-        try:
+        for encoder, distance in tqdm.tqdm(list(itertools.product(encoders.items(), distances))):
+            try:
 
-            key, encoder = encoder
-            train_x, train_y = get_data("../../data/train.csv", encoder=encoder)
-            results = cross_validation(train_x, train_y, classifier=KNN(), folds=10, k=list(range(1, 101)),
-                                       encoder=encoder, distance=distance)
+                key, encoder = encoder
+                train_x, train_y = get_data("../../data/train.csv", encoder=encoder)
+                results = cross_validation(train_x, train_y, classifier=KNN(), folds=10, k=list(range(1, 101)),
+                                           encoder=encoder, distance=distance)
 
-            with open("../../Classification_algorithms/Predictions/knn_crossval_%s_%s_results.pickle" % (key, distance),
-                      'wb') as handle:
-                pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                with open("../../Classification_algorithms/Predictions/knn_crossval_%s_%s_results.pickle" % (key, distance),
+                          'wb') as handle:
+                    pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-            results_set = []
-        except RuntimeError:
-            continue
+                results_set = []
+            except RuntimeError:
+                continue

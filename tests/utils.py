@@ -1,4 +1,6 @@
 import copy
+import os
+import pickle
 
 import numpy as np
 from sklearn.model_selection import KFold
@@ -35,3 +37,30 @@ def cross_validation(x: pd.DataFrame, y: pd.DataFrame, classifier: AbstractClass
         results.append(k_result)
 
     return results
+
+
+def load_results(paths):
+    files = []
+    paths = paths if isinstance(paths, list) else [paths]
+
+    for p in paths:
+        if os.path.isdir(p):
+            for f in os.listdir(p):
+                if f.endswith(".pickle"):
+                    files.append(os.path.join(p, f))
+        else:
+            if p.endswith(".pickle"):
+                files.append(p)
+
+    if not files:
+        raise ValueError("Provided paths don't specify proper pickle files.")
+
+    pandas_dfs = []
+    for f in files:
+        with open(f, "rb") as handle:
+            loaded_dict = pickle.load(handle)
+        pandas_dfs.append(pd.DataFrame.from_dict(loaded_dict))
+
+    merged_results = pd.concat(pandas_dfs)
+
+    return merged_results.astype({'distance': str})
