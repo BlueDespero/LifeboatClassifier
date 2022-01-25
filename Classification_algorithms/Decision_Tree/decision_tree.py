@@ -102,6 +102,34 @@ class Tree:
         if self.split and depth > 1:
             self.split.add_to_graphviz(dot, self, print_info, depth - 1)
 
+    def upper_confidenct_interval(self, f, N, z=0.5):
+        return (f + ((z ** 2) / (2 * N)) \
+                + z * ((f / N - (f ** 2) / N + z ** 2 / (4 * (N ** 2))) ** 0.5)) \
+               / (1 + (z ** 2) / N)
+
+    def prune_with_confidence_interval(self):
+        if self.split:
+            for w in self.split.iter_subtrees():
+                w.prune_with_confidence_interval()
+
+        # N = self.info['num_samples']
+        N = np.sum(self.weights)
+        parent_error = self.weights / np.sum(self.weights)
+        parent_error = sorted(list(parent_error), reverse=True)
+        parent_error = np.sum(parent_error[1:])
+        parent_error = self.upper_confidenct_interval(parent_error, N)
+        self.info['confidence_error'] = parent_error
+
+        if self.split:
+            children_error = 0
+            for w in self.split.iter_subtrees():
+                child_error = (np.sum(w.weights) / N) * w.info['confidence_error']
+                children_error += child_error
+
+            if children_error > parent_error:
+                self.split = None
+                self.info['splitted'] = True
+
 
 class DecisionTree(AbstractClassifier):
     def __init__(self):
@@ -114,7 +142,10 @@ class DecisionTree(AbstractClassifier):
     def train(self, train_x: pd.DataFrame, train_y: pd.Series, criterion='infogain_ratio', **kwargs):
         train = train_x.copy()
         train['target'] = train_y
-        self.tree = Tree(train, criterion=criterion)
+        tree = Tree(train, criterion=criterion)
+        if kwargs.get('prune', True):
+            tree.prune_with_confidence_interval()
+        self.tree = tree
 
     def classify(self, test: pd.DataFrame, **kwargs):
         return np.array([self.tree.classify(test.iloc[i]) for i in range(len(test))])
