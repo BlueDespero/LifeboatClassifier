@@ -4,7 +4,7 @@ import numpy as np
 def entropy(counts):
     s = sum(counts)
     counts = counts / s
-    return -np.sum(counts * np.log2(counts + 1e-100))
+    return -np.sum(counts * np.log2(counts + 0.0001))
 
 
 def gini(counts):
