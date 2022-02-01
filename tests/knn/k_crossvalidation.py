@@ -15,24 +15,22 @@ encoders = {
     "BackwardDifferenceEncoder": BackwardDifferenceEncoder,
     "BaseNEncoder": BaseNEncoder,
     "BinaryEncoder": BinaryEncoder,
-    #    "CatBoostEncoder": CatBoostEncoder,
+    "CatBoostEncoder": CatBoostEncoder,
     "CountEncoder": CountEncoder,
-    #    "GLMMEncoder": GLMMEncoder,
+    "GLMMEncoder": GLMMEncoder,
     "HashingEncoder": HashingEncoder,
     "HelmertEncoder": HelmertEncoder,
-    #    "JamesSteinEncoder": JamesSteinEncoder,
-    #    "LeaveOneOutEncoder": LeaveOneOutEncoder,
-    #    "MEstimateEncoder": MEstimateEncoder,
+    "JamesSteinEncoder": JamesSteinEncoder,
+    "LeaveOneOutEncoder": LeaveOneOutEncoder,
+    "MEstimateEncoder": MEstimateEncoder,
     "OneHotEncoder": OneHotEncoder,
     "OrdinalEncoder": OrdinalEncoder,
     "SumEncoder": SumEncoder,
-    "PolynomialEncoder": PolynomialEncoder
-    #    "TargetEncoder": TargetEncoder,
-    #    "WOEEncoder": WOEEncoder
+    "PolynomialEncoder": PolynomialEncoder,
+    "TargetEncoder": TargetEncoder,
+    "WOEEncoder": WOEEncoder
 }
 
-# distances = ["braycurtis", "canberra", "chebyshev", "cityblock", "correlation", "cosine", "euclidean", "jensenshannon",
-#             "mahalanobis", "matching", "minkowski", "russellrao", "seuclidean", "sqeuclidean", "wminkowski"]
 
 distances = ["braycurtis", "canberra", "chebyshev", "cityblock", "correlation", "cosine", "euclidean", "jensenshannon",
              "matching", "minkowski", "russellrao", "seuclidean", "sqeuclidean"]
@@ -46,10 +44,10 @@ if __name__ == "__main__":
 
                 key, encoder = encoder
                 train_x, train_y = get_data("../../data/train.csv", encoder=encoder)
-                results = cross_validation(train_x, train_y, classifier=KNN(), folds=10, k=list(range(1, 101)),
+                results = cross_validation(train_x, train_y, classifier=KNN(), folds=10, k=list(range(1, 151)),
                                            encoder=encoder, distance=distance)
 
-                with open("../../Classification_algorithms/Predictions/knn_crossval_%s_%s_results.pickle" % (key, distance),
+                with open("../../Classification_algorithms/K_Nearest_Neighbors/predictions/knn_crossval_%s_%s_results.pickle" % (key, distance),
                           'wb') as handle:
                     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
