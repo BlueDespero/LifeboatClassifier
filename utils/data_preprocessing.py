@@ -2,7 +2,21 @@ import itertools
 
 import numpy as np
 import pandas as pd
+from random import shuffle
 
+def get_dummy_y(x_list, y_list):
+    proportion = pd.concat([y for y in y_list if y[0] is not None]).value_counts(normalize=True)
+    y_dummy = []
+
+    for i, x in enumerate(x_list):
+        if y_list[i][0] is None:
+            y_d = [1]*int(x.shape[0]*proportion[1]) + [0]*(x.shape[0] - int(x.shape[0]*proportion[1]))
+            shuffle(y_d)
+            y_dummy.append(pd.DataFrame(y_d))
+        else:
+            y_dummy.append(y_list[i])
+
+    return pd.concat(y_dummy)
 
 def get_data(path, encoder=None, cols=None, drop_invariant=True) -> (pd.DataFrame, pd.DataFrame):
     if not isinstance(path, list):
@@ -14,7 +28,7 @@ def get_data(path, encoder=None, cols=None, drop_invariant=True) -> (pd.DataFram
     for p in path:
         data = pd.read_csv(p)
         xs = data[data.columns.difference(['Survived'])]
-        ys = data['Survived'] if 'Survived' in data.columns else None
+        ys = data['Survived'] if 'Survived' in data.columns else [None]
 
         x_list.append(xs)
         y_list.append(ys)
@@ -22,9 +36,10 @@ def get_data(path, encoder=None, cols=None, drop_invariant=True) -> (pd.DataFram
     if encoder is not None:
         x_merged = pd.concat(x_list)
         splits = np.cumsum([0] + [x.shape[0] for x in x_list])
+        y_dummy = get_dummy_y(x_list, y_list)
 
         enc = encoder(cols=cols, drop_invariant=drop_invariant, return_df=True)
-        enc.fit(x_merged)
+        enc.fit(x_merged, y_dummy)
         x_merged_transformed = enc.transform(x_merged)
         x_list = [x_merged_transformed.iloc[splits[i]:splits[i + 1]] for i in range(len(splits)-1)]
 
