@@ -20,6 +20,8 @@ def purity_summary(data, purity_functions):
                                    columns=["purity_name", "purity_measure", "feature"])
         result_dataframe = pd.concat([result_dataframe, p_dataframe])
 
+    return result_dataframe
+
 
 if __name__ == "__main__":
     full_data = pd.read_csv("../data/train.csv")
