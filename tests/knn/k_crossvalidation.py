@@ -31,7 +31,6 @@ encoders = {
     "WOEEncoder": WOEEncoder
 }
 
-
 distances = ["braycurtis", "canberra", "chebyshev", "cityblock", "correlation", "cosine", "euclidean", "jensenshannon",
              "matching", "minkowski", "russellrao", "seuclidean", "sqeuclidean"]
 
@@ -41,14 +40,15 @@ if __name__ == "__main__":
 
         for encoder, distance in tqdm.tqdm(list(itertools.product(encoders.items(), distances))):
             try:
-
                 key, encoder = encoder
-                train_x, train_y = get_data("../../data/train.csv", encoder=encoder)
-                results = cross_validation(train_x, train_y, classifier=KNN(), folds=10, k=list(range(1, 151)),
+                train_x, train_y = get_data("../../data/train.csv", encoder=encoder,
+                                            keep_cols=["Sex", "Age", "Pclass", "Fare"])
+                results = cross_validation(train_x, train_y, classifier=KNN(), folds=10, k=list(range(1, 101)),
                                            encoder=encoder, distance=distance)
 
-                with open("../../Classification_algorithms/K_Nearest_Neighbors/predictions/knn_crossval_%s_%s_results.pickle" % (key, distance),
-                          'wb') as handle:
+                with open(
+                        "../../Classification_algorithms/K_Nearest_Neighbors/predictions/pruned/knn_%s_%s_results.pickle" % (
+                        key, distance),'wb') as handle:
                     pickle.dump(results, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
                 results_set = []

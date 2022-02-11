@@ -18,7 +18,7 @@ def get_dummy_y(x_list, y_list):
 
     return pd.concat(y_dummy)
 
-def get_data(path, encoder=None, cols=None, drop_invariant=True) -> (pd.DataFrame, pd.DataFrame):
+def get_data(path, encoder=None, cols=None, drop_invariant=True, keep_cols=None) -> (pd.DataFrame, pd.DataFrame):
     if not isinstance(path, list):
         path = [path]
 
@@ -27,6 +27,10 @@ def get_data(path, encoder=None, cols=None, drop_invariant=True) -> (pd.DataFram
 
     for p in path:
         data = pd.read_csv(p)
+        if keep_cols is not None:
+            if "Survived" not in keep_cols:
+                keep_cols.append("Survived")
+            data = data[keep_cols]
         xs = data[data.columns.difference(['Survived'])]
         ys = data['Survived'] if 'Survived' in data.columns else [None]
 

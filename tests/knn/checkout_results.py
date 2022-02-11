@@ -3,7 +3,7 @@ import pandas as pd
 from tests.utils import load_results
 from tests.knn.k_crossvalidation import encoders
 
-results = load_results("../../Classification_algorithms/K_Nearest_Neighbors/predictions")
+results = load_results("../../Classification_algorithms/K_Nearest_Neighbors/predictions/pruned")
 reverse_encoders = {v: k for k, v in encoders.items()}
 
 results['encoder'] = results['encoder'].apply(lambda x: reverse_encoders[x])
