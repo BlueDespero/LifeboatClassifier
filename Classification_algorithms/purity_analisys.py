@@ -6,16 +6,14 @@ import Classification_algorithms.Decision_Tree.purity_measures as pm
 
 
 def plot_results(col_names, purity_measures):
-    purity_measures, col_names = zip(*sorted(zip(purity_measures, col_names), reverse=True))
+    purity_measures, col_names = zip(*sorted(zip(purity_measures, col_names)))
     plt.rcdefaults()
     fig, ax = plt.subplots()
 
     # Example data
     y_pos = np.arange(len(col_names))
 
-    ax.barh(y_pos, purity_measures, align='center')
-    ax.set_yticks(y_pos, labels=col_names)
-    ax.invert_yaxis()  # labels read top-to-bottom
+    ax.barh(y_pos, purity_measures, align='center', tick_label=col_names)
     plt.show()
 
 
