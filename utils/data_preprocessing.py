@@ -28,9 +28,11 @@ def get_data(path, encoder=None, cols=None, drop_invariant=True, keep_cols=None)
     for p in path:
         data = pd.read_csv(p)
         if keep_cols is not None:
-            if "Survived" not in keep_cols:
-                keep_cols.append("Survived")
-            data = data[keep_cols]
+            if "Survived" not in keep_cols and "Survived" in data.columns:
+                data = data[keep_cols+["Survived"]]
+            else:
+                data = data[keep_cols]
+
         xs = data[data.columns.difference(['Survived'])]
         ys = data['Survived'] if 'Survived' in data.columns else [None]
 

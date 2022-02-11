@@ -25,6 +25,6 @@ print(best_all)
 
 summary = pd.concat(best_results, axis=1).T
 summary = summary[['encoder', 'distance', 'k', 'err_rate', 'standard_deviation']]
-summary.to_excel('../../Classification_algorithms/K_Nearest_Neighbors/predictions/knn_crossval_summary.xlsx', index=False)
+summary.to_excel('../../Classification_algorithms/K_Nearest_Neighbors/predictions/pruned/knn_crossval_summary.xlsx', index=False)
 print(summary)
 
