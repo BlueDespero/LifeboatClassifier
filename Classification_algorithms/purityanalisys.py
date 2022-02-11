@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Classification_algorithms.Decision_Tree import purity_measures as pm
+import Classification_algorithms.Decision_Tree.purity_measures as pm
 
 
 def plot_results(col_names, purity_measures):
